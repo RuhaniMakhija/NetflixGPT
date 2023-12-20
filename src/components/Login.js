@@ -3,16 +3,16 @@ import Header from "./Header"
 import { validateData, validateName } from "../utils/validate";
 import { createUserWithEmailAndPassword,signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "../utils/firebase"
-import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice";
+import { USER_PROFILE_ICON } from "../utils/constants";
+import { NETFLIX_BG } from "../utils/constants";
 
 
 const Login = () => {
   const[isSignIn,setIsSignIn]=useState(true);
   const [errorMessage,setErrorMessage]=useState(null);
   const [nameError,setNameError]=useState(null);
-  const navigate=useNavigate();
   const dispatch=useDispatch();
 
 
@@ -40,16 +40,15 @@ const Login = () => {
         .then((userCredential) => {
           const user = userCredential.user;
           updateProfile(user, {
-            displayName: name.current.value, photoURL: "https://media.licdn.com/dms/image/D4D03AQGEPiTc0uEb1A/profile-displayphoto-shrink_800_800/0/1699092873319?e=1708560000&v=beta&t=OUyT3Plm4XnvOtli920XXFA69Kb6g_7uxAw207bmQjY"
+            displayName: name.current.value, photoURL: USER_PROFILE_ICON
           }).then(() => {
             const {uid,email,displayName,photoURL} = auth.currentUser;
             dispatch(addUser({uid:uid,email:email,displayName:displayName,photoURL:photoURL}));
-            navigate("/browse");
+            
           }).catch((error) => {
 
             setErrorMessage(error.message)
           });
-          console.log(user);
           
         })
         .catch((error) => {
@@ -63,8 +62,7 @@ const Login = () => {
       signInWithEmailAndPassword(auth, email.current.value,password.current.value)
         .then((userCredential) => {
           const user = userCredential.user;
-          console.log(user);
-          navigate("/browse");
+          
         })
         .catch((error) => {
           const errorCode = error.code;
@@ -78,7 +76,7 @@ const Login = () => {
   return (
     <div>
       <Header/>
-      <img className="absolute" src="https://assets.nflxext.com/ffe/siteui/vlv3/b4c7f092-0488-48b7-854d-ca055a84fb4f/5b22968d-b94f-44ec-bea3-45dcf457f29e/IN-en-20231204-popsignuptwoweeks-perspective_alpha_website_large.jpg" alt="bg"/>
+      <img className="absolute" src={NETFLIX_BG} alt="bg"/>
 
       <form onSubmit={(e)=>e.preventDefault()} className="w-3/12 absolute bg-black p-8 mx-auto my-36 right-0 left-0 flex flex-col bg-opacity-80 text-white">
         <h1 className="font-bold text-3xl text-white m-4">{isSignIn?"Sign In":"Sign Up"}</h1>
